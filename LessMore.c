@@ -31,7 +31,7 @@ void charPrettyPrint( char c,int l );
  */
 void gameRun();
 
-/* Function: startGame
+/* Function: startGame()
  *
  * Constructor function for game variables.
  * 
@@ -48,7 +48,7 @@ void startGame();
  */
 void startGameMenu( char c );
 
-/* Function: promptGame(int userGuess, int r)
+/* Function: promptGame( int r )
  *
  * Resursive function that prompts the user to enter a number for the game, upon which a check to done to determine
  * what to input next.
@@ -61,11 +61,38 @@ void startGameMenu( char c );
  */
 void promptGame( int r ); 
 
+/* Function: less( int r )
+ *
+ * Function for the behavior of the program when the guess is less than the number r
+ *  
+ * r is the current value to guess.
+ * 
+ * Returns void
+ */
+void less( int r );
 
+/* Function: more( int r )
+ *
+ * Function for the behavior of the program when the guess is more than the number r
+ *  
+ * r is the current value to guess.
+ * 
+ * Returns void
+ */
+void more( int r );
+
+/* Function: won()
+ *
+ * Function for the behavior of the program when the guess is correct
+ * 
+ * Returns void
+ */
+void won();
 
 int main() 
 {
     srand(time(0));      // initialisation of srand for rnd() generated, using current time. Must be called once.
+    setbuf(stdout, NULL);
 
     startGame();         //Display Game Screen
 
@@ -73,7 +100,8 @@ int main()
 }
 
 #pragma region Game Functions
-// These functions are utilised in running the game appropriately.
+// These functions are utilised in running the game
+
     void startGame()
     {
         int startcond = -1;
@@ -88,10 +116,9 @@ int main()
         printf("Welcome to the more/less game! \n\n");
         printf("Game instructions ");
         charPrettyPrint(':', 102);
-        printf("\n");
-        printf("The game has generated a random number between 1 & 100. Your task is to guess this number.\n");
-        printf("Upon taking a guess, you will be told if your guess was more or less than the correct value!\n");
-        printf("Are you ready? (Y / N):");
+        printf("\nThe game has generated a random number between 1 & 100. Your task is to guess this number.");
+        printf("\nUpon taking a guess, you will be told if your guess was more or less than the correct value!");
+        printf("\nAre you ready? (Y / N):");
         scanf("%c", &c);
 
         switch(c) 
@@ -112,35 +139,30 @@ int main()
 
     void gameRun() 
     {
-        int r = 30;             // This generates our random number for the game, between 1 and 100.
+        int r = RndGen();             // This generates our random number for the game, between 1 and 100.
         system("cls");
         promptGame(r);          
     } 
 
     void promptGame( int r )
     {
-        int userGuess = -1;    // value -1 is used as it is out of bounds for the game.
+        int userGuess = -1;     // value -1 is used as it is out of bounds for the game
         printf("\nEnter Your Guess: ");
         scanf("%d", &userGuess);
 
         if (userGuess < 101 && userGuess > 0) 
         {
-            if (userGuess > r) 
+            if (userGuess > r)
             {
-                printf("Less! \n");
-                Sleep(600);   //sleeps for 600 milliseconds
-                promptGame(r);
+                less(r);
             }
-            else if (userGuess < r) 
+            else if (userGuess < r)
             {
-                printf("More! \n");
-                Sleep(600);
-                promptGame(r);
+                more(r);
             }
             else 
             {
-                printf("You have guessed correctly and have won!");
-                Sleep(5000);
+                won();
             }
         } 
         else 
@@ -149,6 +171,29 @@ int main()
             Sleep(2000);
             promptGame(r);
         }
+    }
+
+    void less( int r )
+    {
+        printf("Less! \n");
+        Sleep(600);
+        promptGame(r);
+    }
+
+    void more( int r )
+    {
+        printf("More! \n");
+        Sleep(600);
+        promptGame(r);
+    }
+
+    void won() 
+    {
+        system("cls");
+        Sleep(30);
+        charPrettyPrint('_', 100);
+        printf("You have guessed correctly and have won!");
+        Sleep(5000);
     }
 
 #pragma endregion 
