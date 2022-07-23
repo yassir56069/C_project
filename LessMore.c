@@ -3,10 +3,20 @@
 #include <time.h>
 #include <windows.h>
 
+/* enum: diff
+ *
+ * Each value is an integer to determine the number of tries. -1 is used to represent unlimited tries
+ */
+typedef enum
+{
+    easy = -1,
+    medium = 25,
+    hard = 10
+} diff_enum; diff_enum tries;
 
 /* Function: RndGen
  * 
- * Generates a random number, r between 1 and 100.
+ * Generates a random number, r between 1 and 100
  * 
  * Returns said random number, r
  */
@@ -14,30 +24,31 @@ int RndGen();
 
 /* Function: charPrettyPrint
  * 
- * prints to console a series of characters.
+ * prints to console a series of characters
  * 
- * Parameters: l, which represents the length of the series of characters.
- *             c, which represents the character to be printed.
- * Returns void
- */
-void charPrettyPrint( char c,int l );
-
-/* Function: gameRun()
- *
- * fallback for recursive function, starts the running of the game. promptgame jumps to this upon exit
- * of recursion.
+ * Parameters: 
+ * l, which represents the length of the series of characters,
+ * c, which represents the character to be printed
  * 
  * Returns void
  */
-void gameRun();
+void charPrettyPrint( char c, int l );
 
 /* Function: startGame()
  *
- * Constructor function for game variables.
+ * Constructor function for game variables
  * 
  * Returns void
  */
 void startGame();
+
+/* Function: gameDiff()
+ *
+ * Recursive game difficulty menu, after the choice, the player is sent to the startGame function
+ * 
+ * Returns void
+ */
+void gameDiff();
 
 /* Function: startGameMenu( char c )
  *
@@ -48,38 +59,67 @@ void startGame();
  */
 void startGameMenu( char c );
 
-/* Function: promptGame( int r )
+/* Function: gameRun( diff_enum tries )
  *
- * Resursive function that prompts the user to enter a number for the game, upon which a check to done to determine
- * what to input next.
+ * fallback for recursive function, goes to the game difficulty menu. promptgame jumps to this upon exit
+ * of recursion
  * 
- * r is the current value to guess.
- * 
- * exit conditions: game win.
+ * tries represents the difficulty enum
  * 
  * Returns void
  */
-void promptGame( int r ); 
+void gameRun( diff_enum tries );
 
-/* Function: less( int r )
+/* Function: promptGame( int r, int t )
+ *
+ * Resursive function that prompts the user to enter a number for the game, upon which a check to done to determine
+ * what to input next
+ * 
+ * Parameters: 
+ * r, which is the current random number to guess,
+ * t, which is the number of tries left 
+ * 
+ * Exit conditions: 
+ * a) game win,
+ * b) out of tries
+ * 
+ * Returns void
+ */
+void promptGame( int r, int t ); 
+
+/* Function: less( int r, int t  )
  *
  * Function for the behavior of the program when the guess is less than the number r
  *  
- * r is the current value to guess.
+ * Parameters: 
+ * r, which is the current random number to guess,
+ * t, which is the number of tries left 
  * 
  * Returns void
  */
-void less( int r );
+void less( int r , int t);
 
-/* Function: more( int r )
+/* Function: more( int r, int t  )
  *
  * Function for the behavior of the program when the guess is more than the number r
  *  
- * r is the current value to guess.
+ * Parameters: 
+ * r, which is the current random number to guess,
+ * t, which is the number of tries left 
  * 
  * Returns void
  */
-void more( int r );
+void more( int r , int t);
+
+/* Function: checkLost( int t )
+ *
+ * Check if the user has run out of tries
+ * 
+ * t represents the number of tries
+ * 
+ * Returns void
+ */
+void checkLost(int t);
 
 /* Function: won()
  *
@@ -88,6 +128,14 @@ void more( int r );
  * Returns void
  */
 void won();
+
+/* Function: lost()
+ *
+ * Function for the behavior of the program when the user has run out of tries
+ * 
+ * Returns void
+ */
+void lost();
 
 int main() 
 {
@@ -111,54 +159,96 @@ int main()
 
     void startGameMenu( char c ) 
     {
-        system("cls") ;          //Clear the console
-        charPrettyPrint('-', 120);
-        printf("Welcome to the more/less game! \n\n");
-        printf("Game instructions ");
-        charPrettyPrint(':', 102);
-        printf("\nThe game has generated a random number between 1 & 100. Your task is to guess this number.");
-        printf("\nUpon taking a guess, you will be told if your guess was more or less than the correct value!");
-        printf("\nAre you ready? (Y / N):");
-        scanf("%c", &c);
+        #pragma region Game Menu Text
+
+            system("cls");          // clear the console
+            charPrettyPrint('-', 120);
+            printf("Welcome to the more/less game! \n\n");
+            printf("Game instructions ");
+            charPrettyPrint(':', 102);
+            printf("\nThe game has generated a random number between 1 & 100. Your task is to guess this number.");
+            printf("\nUpon taking a guess, you will be told if your guess was more or less than the correct value!");
+            printf("\nAre you ready? (Y / N):");
+            scanf("%c", &c);
+
+        #pragma endregion
 
         switch(c) 
         {
             case 'Y':
-                gameRun();               //starts game running sequence
+                gameDiff();              // difficulty menu
                 break;
 
             case 'N':
                 system("cls"); 
-                printf("Exiting...");   //exits game (returns to startGame)
+                printf("Exiting...");   // exits game (returns to startGame)
                 break;
 
             default:
-                startGameMenu(c);      //recurses back to startGameMenu.
+                startGameMenu(c);      // recurses back to startGameMenu.
         }
     }
 
-    void gameRun() 
+    void gameDiff()
+    {
+        #pragma region text
+            int c;
+
+            system("cls");
+            charPrettyPrint('-', 120);
+            printf("Please Choose a difficulty: ");
+            printf("\n1] Easy: Unlimited Tries");
+            printf("\n2] Medium: 25 Tries");
+            printf("\n3] Hard: 10 Tries");
+            printf("\n: ");
+
+            scanf("%d", &c);
+        #pragma endregion
+
+        switch(c)
+        {
+            case 1:
+                gameRun(easy);
+                break;
+            
+            case 2:
+                gameRun(medium);
+                break;
+            
+            case 3:
+                gameRun(hard);
+                break;
+            
+            default:
+                gameDiff();
+        }
+    }
+
+    void gameRun(  diff_enum tries ) 
     {
         int r = RndGen();             // This generates our random number for the game, between 1 and 100.
         system("cls");
-        promptGame(r);          
+        promptGame(r, tries);          
     } 
 
-    void promptGame( int r )
+    void promptGame( int r, int t )
     {
         int userGuess = -1;     // value -1 is used as it is out of bounds for the game
+        printf("Tries: %d", t);
         printf("\nEnter Your Guess: ");
         scanf("%d", &userGuess);
 
         if (userGuess < 101 && userGuess > 0) 
         {
-            if (userGuess > r)
+            if (t == 0) {lost();}
+
+            else if (userGuess > r)
             {
-                less(r);
+                less( r , t );
             }
             else if (userGuess < r)
             {
-                more(r);
+                more( r , t );
             }
             else 
             {
@@ -169,32 +259,47 @@ int main()
         {
             printf("Invalid Value! Must be between 1 and 100.. \n"); 
             Sleep(2000);
-            promptGame(r);
+            promptGame(r, t);
         }
     }
 
-    void less( int r )
-    {
-        printf("Less! \n");
-        Sleep(600);
-        promptGame(r);
-    }
+    #pragma region Win Loss Conditionals
 
-    void more( int r )
-    {
-        printf("More! \n");
-        Sleep(600);
-        promptGame(r);
-    }
+        void less( int r , int t)
+        {
+            printf("Less! \n");
+            t--;
+            Sleep(200);
+            promptGame(r, t);
+        }
 
-    void won() 
-    {
-        system("cls");
-        Sleep(30);
-        charPrettyPrint('_', 100);
-        printf("You have guessed correctly and have won!");
-        Sleep(5000);
-    }
+        void more( int r, int t )
+        {
+            printf("More! \n");
+            t--;
+            Sleep(200);
+            promptGame(r, t);
+        }
+
+        void won() 
+        {
+            system("cls");
+            Sleep(30);
+            charPrettyPrint('_', 100);
+            printf("You have guessed correctly and have won!");
+            Sleep(5000);
+        }
+
+        void lost() 
+        {
+            system("cls");
+            Sleep(30);
+            charPrettyPrint('_', 100);
+            printf("You have guessed incorrectly too many times and have lost the game!");
+            Sleep(5000);
+        }
+
+    #pragma endregion
 
 #pragma endregion 
 
