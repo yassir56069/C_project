@@ -425,10 +425,10 @@ int main()
             charPrettyPrint( '-', 40 ); 
         }
 
-        printf("Enter the number of tries (> 10):");
+        printf("Enter the number of tries (>= 10):");
         scanf("%d", &t);
 
-        if ( t > 10) 
+        if ( t >= 10) 
         {
             return t; 
         }
