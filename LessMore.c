@@ -257,7 +257,6 @@ int main()
 
     void startGame()
     {
-        int startcond = -1;
         char choice;
         startGameMenu(choice);
     }
