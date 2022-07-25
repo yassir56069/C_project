@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "*.py": "python",
-        "LessMore.C": "cpp"
+        "LessMore.C": "cpp",
+        "stdlib.h": "c"
     }
 }

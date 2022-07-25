@@ -26,8 +26,14 @@ To install the game you just have to left-click on the green code button, after 
 
 ![install](https://i.imgur.com/ljzHXzA.png)
 
-### *otherwise you can clone the repository by doing*
+if you'd like to clone the repository, run the following command in the command prompt terminal, to an appropriate folder.
 
 ```sh
 git clone https://github.com/yassir56069/tp_git_yassirhoossanbuksh
+```
+
+to build the program yourself, having `gcc` installed you must run the following command in command prompt
+
+```sh
+gcc -o LessMore.exe main.c func_game.c func_util.c
 ```
